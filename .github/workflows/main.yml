@@ -23,13 +23,13 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: your-aws-region  # Replace with your AWS region
+        aws-region: ap-south-1
 
     - name: Build and Push Docker Image
       run: |
         docker build -t your-docker-repo/your-app:latest .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
-        docker push your-docker-repo/your-app:latest
+        docker push sudhanshu95/fastapi-celery:latest
 
   deploy:
     needs: build
@@ -43,5 +43,5 @@ jobs:
         username: ${{ secrets.EKS_USERNAME }}
         key: ${{ secrets.EKS_SSH_KEY }}
         script: |
-          kubectl apply -f k8s/your-app-deployment.yaml  # Replace with your Kubernetes deployment YAML file
+          kubectl apply -f k8s/git-deployment.yml  # Replace with your Kubernetes deployment YAML file
           kubectl apply -f k8s/your-app-service.yaml  # Replace with your Kubernetes service YAML file

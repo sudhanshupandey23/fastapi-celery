@@ -46,4 +46,4 @@ jobs:
         key: ${{ secrets.EKS_SSH_KEY }}
         script: |
           kubectl apply -f k8s/git-deployment.yml  # Replace with your Kubernetes deployment YAML file
-          kubectl apply -f k8s/your-app-service.yaml  # Replace with your Kubernetes service YAML file
+          kubectl apply -f k8s/service.yml  # Replace with your Kubernetes service YAML file

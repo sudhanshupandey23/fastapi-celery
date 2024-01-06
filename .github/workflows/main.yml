@@ -1,0 +1,47 @@
+name: CI/CD for FastAPI on EKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Kubectl
+      uses: azure/k8s-set-context@v1
+      with:
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Set up AWS CLI
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: your-aws-region  # Replace with your AWS region
+
+    - name: Build and Push Docker Image
+      run: |
+        docker build -t your-docker-repo/your-app:latest .
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker push your-docker-repo/your-app:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy to EKS
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EKS_HOST }}
+        username: ${{ secrets.EKS_USERNAME }}
+        key: ${{ secrets.EKS_SSH_KEY }}
+        script: |
+          kubectl apply -f k8s/your-app-deployment.yaml  # Replace with your Kubernetes deployment YAML file
+          kubectl apply -f k8s/your-app-service.yaml  # Replace with your Kubernetes service YAML file

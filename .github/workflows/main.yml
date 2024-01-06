@@ -13,11 +13,13 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Kubernetes context
-      uses: azure/k8s-set-context@v1
-      with:
-        method: kubeconfig
-        kubeconfig: ${{ secrets.KUBECONFIG_FILE }}
+    - name: Set up K8s context
+  uses: azure/k8s-set-context@v1
+  with:
+    method: kubeconfig
+    kubeconfig: ${{ secrets.KUBECONFIG }}
+    context: my-context
+
 
     - name: Set up AWS CLI
       uses: aws-actions/configure-aws-credentials@v2

@@ -29,7 +29,7 @@ jobs:
 
     - name: Build and Push Docker Image
       run: |
-        docker build -t your-docker-repo/your-app:latest .
+        docker build -t sudhanshu95/fastapi-celery:latest .
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker push sudhanshu95/fastapi-celery:latest
 

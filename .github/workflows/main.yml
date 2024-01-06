@@ -3,7 +3,7 @@ name: CI/CD for FastAPI on EKS
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:

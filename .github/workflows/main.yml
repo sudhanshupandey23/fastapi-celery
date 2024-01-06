@@ -17,7 +17,7 @@ jobs:
   uses: azure/k8s-set-context@v1
   with:
     method: kubeconfig
-    kubeconfig: ${{ secrets.KUBECONFIG }}
+    kubeconfig: ${{ secrets.KUBECONFIG_FILE }}
     context: my-context
 
 

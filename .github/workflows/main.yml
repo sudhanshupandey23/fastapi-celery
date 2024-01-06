@@ -14,10 +14,10 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Kubernetes context
-      run: |
-        mkdir -p ~/.kube
-        echo ${{ secrets.KUBECONFIG_FILE }} | base64 --decode > ~/.kube/config
+    - name: Set up Kubectl
+      uses: azure/k8s-set-context@v1
+      with:
+        kubeconfig: ${{ secrets.KUBECONFIG_FILE }}
 
 
     - name: Set up AWS CLI

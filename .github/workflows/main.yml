@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: github_credintials
+    environment: github_credentials
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
@@ -19,9 +19,9 @@ jobs:
         with:
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
           mask-password: true
-          registry-type: 'private'
+          registry-type: private
           skip-logout: false
-          region: ${{ secrets.AWS_REGION }}
+          region: ${{ secrets.AWS_REGION }}  # Replace with your actual AWS region
 
       - name: Build and push Docker image to ECR
         run: |

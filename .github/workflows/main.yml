@@ -16,7 +16,7 @@ jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    environment: FAST_API_DEPLOYMENT
+    environment: github_credintials
 
     steps:
       - name: Checkout

@@ -21,7 +21,7 @@ jobs:
           mask-password: true
           registry-type: private
           skip-logout: false
-          region: ${{ secrets.AWS_REGION }}  # Replace with your actual AWS region
+          region: ${{ secrets.AWS_REGION }}  # Specify the AWS region
 
       - name: Build and push Docker image to ECR
         run: |

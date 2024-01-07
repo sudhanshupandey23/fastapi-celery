@@ -4,7 +4,8 @@ name: Deploy to ECR
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 env:
   ECR_REPOSITORY: fastapi-celery
@@ -19,20 +20,17 @@ jobs:
     steps:
       - name: Set short git commit SHA
         id: commit
-        uses: prompt/actions-commit-hash@v2
-
-      - name: Check out code
         uses: actions/checkout@v2
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
-          aws-region: ap-south-1
-          audience: sts.amazonaws.com
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: eks-cluster-admin-role
         env:
-          ECR_REPOSITORY: fastapi-celery
-          EKS_CLUSTER_NAME: aws-cluster
-          AWS_REGION: ap-south-1
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          EKS_CLUSTER_NAME: ${{ env.EKS_CLUSTER_NAME }}
+          AWS_REGION: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -47,20 +45,13 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       - name: Update kube config
-        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+        run: aws eks --region $AWS_REGION update-kubeconfig --name $EKS_CLUSTER_NAME
 
       - name: Deploy to EKS
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: ${{ steps.commit.outputs.short }}
         run: |
-          sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" manifests/hello-app-deployment.yaml && \
-          kubectl apply -f manifests/git-deployment.yml
+          sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" manifests/hello-app-deployment.yaml &&
+          kubectl apply -f manifests/git-deployment.yml &&
           kubectl apply -f manifests/service.yml
-
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}        
-        IMAGE_TAG: ${{ steps.commit.outputs.short }}
-      run: |
-        sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" manifests/hello-app-deployment.yaml && \
-        kubectl apply -f manifests/git-deployment.yml
-        kubectl apply -f manifests/service.yml

@@ -1,20 +1,29 @@
-name: Build and Deploy to Docker Image
-on: push
+name: Deploy to EKS
+on:
+  push:
+    branches:
+      - main  # Adjust the branch as needed
+
 jobs:
-  little-ci-and-little-cd:
+  deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Push image and deploy
-        uses: observian/littleci-littlecd-eks@master
+
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
         with:
-          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          account_id: ${{ secrets.AWS_ACCOUNT_ID }}
-          repo: rahulecr95
-          region: ap-south-1
-          tags: 0.1.1.${{ github.run_number }},${{ github.sha }}
-          eks_cluster_name: aws-cluster
-          k8s_manifest: git-deployment.yml
-          k8s_image_tag: 0.1.1.${{ github.run_number }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Authenticate with Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry: 185738856137.dkr.ecr.ap-south-1.amazonaws.com/rahulecr95
+
+      - name: Deploy to Amazon EKS
+        run: |
+          kubectl apply -f git-deployment.yml

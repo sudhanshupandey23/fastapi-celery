@@ -19,6 +19,9 @@ jobs:
         with:
           registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
           mask-password: true
+          registry-type: 'private'
+          skip-logout: false
+          region: ${{ secrets.AWS_REGION }}
 
       - name: Build and push Docker image to ECR
         run: |

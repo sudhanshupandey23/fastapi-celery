@@ -31,10 +31,6 @@ jobs:
   with:
     aws-region: ap-south-1
     audience: sts.amazonaws.com
-  env:
-    ECR_REPOSITORY: fastapi-celery
-    EKS_CLUSTER_NAME: aws-cluster
-    AWS_REGION: ap-south-1
     
     - name: Login to Amazon ECR
       id: login-ecr

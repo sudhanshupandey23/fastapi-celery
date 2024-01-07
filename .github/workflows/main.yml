@@ -17,7 +17,7 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-souh-1.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
+          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
           mask-password: true
           registry-type: private
           skip-logout: false

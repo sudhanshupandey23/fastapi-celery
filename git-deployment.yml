@@ -1,22 +1,36 @@
-apiVersion: app/v1
+# deployment.yml
+
+apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fastapi-celery
+  name: your-app-deployment
   labels:
-    app: fastapi-celery
+    app: your-app
 spec:
-  replicas: 1
+  replicas: 3  # Adjust the number of replicas as needed
   selector:
     matchLabels:
-      app: fastapi-celery
+      app: your-app
   template:
     metadata:
       labels:
-        app: fastapi-celery
+        app: your-app
     spec:
       containers:
-        - name: fastapi-celery
-          image: sudhanshu95/fastapi-celery:latest
-          imagePullPolicy: Always
+        - name: your-app-container
+          image: DOCKER_IMAGE  # Placeholder, will be replaced during deployment
           ports:
-            - containerPort: 8080
+            - containerPort: 80  # Adjust the port as needed
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: your-app-service
+spec:
+  selector:
+    app: your-app
+  ports:
+    - protocol: TCP
+      port: 80  # Adjust the port as needed
+      targetPort: 80  # Adjust the target port based on your application
+  type: LoadBalancer  # Change the service type if needed

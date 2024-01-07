@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sudhanshu95
+  name: fastapi-celery
   labels:
-    app: sudhanshu95
+    app: fastapi-celery
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sudhanshu95
+      app: fastapi-celery
   template:
     metadata:
       labels:
-        app: sudhanshu95
+        app: fastapi-celery
     spec:
       containers:
-        - name: sudhanshu95
+        - name: fastapi-celery
           image: sudhanshu95/fastapi-celery:latest
           imagePullPolicy: Always
           ports:

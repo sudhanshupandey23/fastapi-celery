@@ -8,7 +8,7 @@ on:
 env:
   ECR_REPOSITORY: rahulecr95
   EKS_CLUSTER_NAME: aws-cluster 
-  AWS_REGION: us-east-1
+  AWS_REGION: ap-south-1
 
 jobs:
   

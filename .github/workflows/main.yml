@@ -1,17 +1,22 @@
-name: Deploy to EKS
+name: Deploy to Kubernetes
 
 on:
   push:
     branches:
-      - master  # Adjust the branch as needed
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          install-kubectl: true
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -19,14 +24,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-south-1
-        env:
-          DEBUG: 1
-
-      - name: Authenticate with Amazon ECR
-        uses: aws-actions/amazon-ecr-login@v1
-        with:
-          registry: 185738856137.dkr.ecr.ap-south-1.amazonaws.com/rahulecr95
-
-      - name: Deploy to Amazon EKS
+          
+      - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f git-deployment.yml
+          kubectl apply -f kubernetes-manifests/git-deployment.yml
+
+# Add additional steps as needed for secrets and configurations

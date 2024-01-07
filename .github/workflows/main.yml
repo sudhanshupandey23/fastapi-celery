@@ -1,34 +1,20 @@
-name: ECR Deployment
-
-on:
-  push:
-    branches:
-      - master  # Adjust the branch as needed
-
+name: Build and Deploy to Docker Image
+on: push
 jobs:
-  deploy:
+  little-ci-and-little-cd:
     runs-on: ubuntu-latest
-    environment: github_credentials
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v2
-
-      - name: Login to ECR
-        id: ecr-login
-        uses: aws-actions/amazon-ecr-login@v1
+      - name: Push image and deploy
+        uses: observian/littleci-littlecd-eks@master
         with:
-          registry: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}
-          mask-password: true
-          registry-type: private
-          skip-logout: false
-          region: ${{ secrets.AWS_REGION }}  # Specify the AWS region
-
-      - name: Build and push Docker image to ECR
-        run: |
-          docker build -t ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:${{ github.sha }} .
-          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/${{ secrets.ECR_REPOSITORY_NAME }}:${{ github.sha }}
-
-      - name: Deploy to ECS or EKS (replace with your deployment step)
-        run: |
-          # Add your deployment script or commands here
-          # For example, deploy to ECS or EKS using kubectl or ECS CLI
+          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          account_id: ${{ secrets.AWS_ACCOUNT_ID }}
+          repo: rahulecr95
+          region: ap-south-1
+          tags: 0.1.1.${{ github.run_number }},${{ github.sha }}
+          eks_cluster_name: aws-cluster
+          k8s_manifest: git-deployment.yml
+          k8s_image_tag: 0.1.1.${{ github.run_number }}

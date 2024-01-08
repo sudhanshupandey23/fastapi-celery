@@ -11,6 +11,8 @@ on:
 env:
   AWS_REGION: ap-south-1 # Your AWS region, e.g. us-west-1
   ECR_REPOSITORY: rahulecr95 # Your Amazon ECR repository name
+  EKS_CLUSTER_NAME: test-eks
+
 
 jobs:
   deploy:
@@ -43,3 +45,10 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . 
           # Push docker container to ECR
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name $EKS_CLUSTER_NAME --region $AWS_REGION
+      - name: Deploy to EKS
+        run: |
+         sed -i.bak "s|DOCKER_IMAGE|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" manifests/git-deployment.yml && \
+         kubectl apply -f manifests/git-deployment.yml
+         kubectl apply -f manifests/service.yml

@@ -16,7 +16,8 @@ spec:
 
 ---
 apiVersion: apps/v1
-kind: Deployment
+#kind: Deployment
+kind: statefullset
 metadata:
   name: fastapi-app
   namespace: fast-api-ns

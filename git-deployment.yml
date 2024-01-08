@@ -45,6 +45,6 @@ spec:
                 - arm64
       containers:
       - name: web-app
-        image: 185738856137.dkr.ecr.ap-south-1.amazonaws.com/rahulecr95:fb27ba8b2b410058a5813195774bfb7e9cde307b
+        image: 185738856137.dkr.ecr.ap-south-1.amazonaws.com/rahulecr95:da994ed67d5e99120ff1dc439476afee80cb0caa
         ports:
         - containerPort: 80

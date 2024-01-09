@@ -1,34 +1,54 @@
-# FastAPI with Celery
+Deploy to Amazon ECR and EKS GitHub Action
+This GitHub Action automates the deployment process of a Docker container to Amazon Elastic Container Registry (ECR) and subsequently deploys the containerized application to an Amazon Elastic Kubernetes Service (EKS) cluster. The workflow is triggered on pushes to the master branch or when pull requests are merged into the master branch.
 
-> Minimal example utilizing FastAPI and Celery with RabbitMQ for task queue, Redis for Celery backend and flower for monitoring the Celery tasks.
+Workflow Configuration
+Triggers
+Push: The workflow is triggered on every push to the master branch.
+Pull Request: The workflow is triggered whenever a pull request is merged into the master branch.
+Environment Variables
+AWS_REGION: The AWS region where the ECR repository and EKS cluster are located (e.g., ap-south-1).
+ECR_REPOSITORY: The name of your Amazon ECR repository.
+EKS_CLUSTER_NAME: The name of your EKS cluster.
+Secrets
+AWS_ACCESS_KEY_ID: Secret key for AWS authentication.
+AWS_SECRET_ACCESS_KEY: Secret key for AWS authentication.
+Workflow Steps
+Checkout: Clones the repository to the GitHub Actions runner.
+Configure AWS Credentials: Configures AWS credentials using the provided access key, secret key, and region.
+Login to Amazon ECR: Uses AWS CLI to log in to Amazon ECR with the configured credentials.
+Build, Tag, and Push Image to Amazon ECR:
+Builds a Docker container from the source code.
+Tags the container with the GitHub commit SHA.
+Pushes the Docker container to the specified Amazon ECR repository.
+Update kubeconfig: Updates the kubeconfig file with the credentials for the specified EKS cluster.
+Deploy to EKS:
+Replaces the placeholder DOCKER_IMAGE in the git-deployment.yml file with the ECR repository and image tag.
+Applies the updated Kubernetes deployment and service configurations to the EKS cluster.
+Note
+Make sure to have the necessary AWS credentials set up as secrets in your GitHub repository (AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY).
+Ensure that your Kubernetes manifests (git-deployment.yml and service.yml) are correctly configured for your application.
+Example Usage:
+name: Deploy to Amazon ECR and EKS
 
-## Requirements
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
 
-- Docker
-  - [docker-compose](https://docs.docker.com/compose/install/)
+env:
+  AWS_REGION: ap-south-1
+  ECR_REPOSITORY: rahulecr95
+  EKS_CLUSTER_NAME: test-eks
 
-## Run example
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: github_credentials
 
-1. Run command ```docker-compose up```to start up the RabbitMQ, Redis, flower and our application/worker instances.
-2. Navigate to the [http://localhost:8000/docs](http://localhost:8000/docs) and execute test API call. You can monitor the execution of the celery tasks in the console logs or navigate to the flower monitoring app at [http://localhost:5555](http://localhost:5555) (username: user, password: test).
-
-## Run application/worker without Docker?
-
-### Requirements/dependencies
-
-- Python >= 3.7
-  - [poetry](https://python-poetry.org/docs/#installation)
-- RabbitMQ instance
-- Redis instance
-
-> The RabbitMQ, Redis and flower services can be started with ```docker-compose -f docker-compose-services.yml up```
-
-### Install dependencies
-
-Execute the following command: ```poetry install --dev```
-
-### Run FastAPI app and Celery worker app
-
-1. Start the FastAPI web application with ```poetry run hypercorn app/main:app --reload```.
-2. Start the celery worker with command ```poetry run celery worker -A app.worker.celery_worker -l info -Q test-queue -c 1```
-3. Navigate to the [http://localhost:8000/docs](http://localhost:8000/docs) and execute test API call. You can monitor the execution of the celery tasks in the console logs or navigate to the flower monitoring app at [http://localhost:5555](http://localhost:5555) (username: user, password: test).
+    steps:
+      # ... (steps mentioned in the original workflow)
+Make sure to adapt the workflow to your specific requirements and customize the Kubernetes manifests according to your application's needs.
